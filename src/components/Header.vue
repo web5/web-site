@@ -12,7 +12,7 @@
 <style scoped>
 .app-header {
   width: 100%;
-  background: #FF9933;
+  background: rgba(0, 0, 0, 0.65);
   position: fixed;
   z-index: 1000;
 }

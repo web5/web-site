@@ -1,9 +1,9 @@
 <template>
-  <div class="app-js-uglify">
+  <div class="app-sql-prettier">
     <div class="app-toolbar">
       <a-space wrap>
-        <a-button type="primary" @click="gulifyHandle">压缩</a-button>
-        <a-button type="primary" @click="copyHandle">复制压缩后代码</a-button>
+        <a-button type="primary" @click="sqlHandle">格式化</a-button>
+        <a-button type="primary" @click="copyHandle">复制</a-button>
       </a-space>
     </div>
     <div class="app-edit-panel">
@@ -11,20 +11,16 @@
         <!-- <a-textarea :rows="30" placeholder="输入 原始 JS" v-model:value="jsOriginValue" /> -->
         <CodeMirror :value="jsOriginValue" @change="mirrorChangeHandle"></CodeMirror>
       </div>
-      <div class="app-edit-panel_result">
-        <a-textarea :rows="30" readonly
-        v-model:value="jsResultValue"/>
-      </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { minify } from "terser";
 // https://terser.org/
 import useClipboard from 'vue-clipboard3'
 // https://github.com/JamieCurnow/vue-clipboard3
 import { message } from 'ant-design-vue';
+import * as sqlFormatter from 'sql-formatter';
 import CodeMirror from '@/components/codemirror/index.vue'
 
 const jsOriginValue = ref<string>('');
@@ -35,17 +31,13 @@ onMounted(() => {
   // TODO
 })
 
-async function gulifyHandle() {
-  const originValue = await minify(jsOriginValue.value, {
-
-  });
-  console.log("🚀 ~ file: UglifyJS.vue:35 ~ gulifyHandle ~ originValue:", originValue.code);
-  jsResultValue.value = originValue.code || ''
+async function sqlHandle() {
+  jsOriginValue.value = sqlFormatter.format(jsOriginValue.value);
 }
 
 const copyHandle = async () => {
   try {
-    await toClipboard(jsResultValue.value);
+    await toClipboard(jsOriginValue.value);
     message.success('复制成功');
   } catch (e) {
     console.log('toClipboard exception ', e);

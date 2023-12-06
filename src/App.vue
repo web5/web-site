@@ -2,8 +2,7 @@
   <a-config-provider :theme="{
       token: {
         borderRadius: 2,
-        wireframe: false,
-        colorPrimary: '#FA8C16'
+        wireframe: false
       },
     }">
     <a-layout class="app-root">
