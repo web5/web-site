@@ -21,6 +21,11 @@ const router = createRouter({
       path: '/sql',
       name: 'sql',
       component: () => import('../views/Sql.vue')
+    },
+    {
+      path: '/json',
+      name: 'json',
+      component: () => import('../views/Json.vue')
     }
   ]
 })

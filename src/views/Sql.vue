@@ -7,9 +7,11 @@
       </a-space>
     </div>
     <div class="app-edit-panel">
-      <div class="app-edit-panel_orgin">
-        <!-- <a-textarea :rows="30" placeholder="输入 原始 JS" v-model:value="jsOriginValue" /> -->
-        <CodeMirror :value="jsOriginValue" @change="mirrorChangeHandle"></CodeMirror>
+      <div class="app-edit-panel_origin">
+        <ATextarea :rows="30" v-model:value="jsOriginValue" />
+      </div>
+      <div class="app-edit-panel_result">
+        <CodeMirror :value="jsResultValue" :lang="lang" readonly></CodeMirror>
       </div>
     </div>
   </div>
@@ -21,18 +23,23 @@ import useClipboard from 'vue-clipboard3'
 // https://github.com/JamieCurnow/vue-clipboard3
 import { message } from 'ant-design-vue';
 import * as sqlFormatter from 'sql-formatter';
+import { MySQL, sql } from '@codemirror/lang-sql';
 import CodeMirror from '@/components/codemirror/index.vue'
 
 const jsOriginValue = ref<string>('');
 const jsResultValue = ref<string>('');
 const { toClipboard } = useClipboard();
+const lang =  sql({
+  dialect: MySQL,
+  upperCaseKeywords: true,
+});
 
 onMounted(() => {
   // TODO
 })
 
 async function sqlHandle() {
-  jsOriginValue.value = sqlFormatter.format(jsOriginValue.value);
+  jsResultValue.value = sqlFormatter.format(jsOriginValue.value);
 }
 
 const copyHandle = async () => {
@@ -46,7 +53,7 @@ const copyHandle = async () => {
 }
 
 const mirrorChangeHandle = (value: string) => {
-  jsOriginValue.value = value;
+  // jsOriginValue.value = value;
 
 }
 

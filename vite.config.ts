@@ -4,11 +4,11 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 const isProd = process.env.NODE_ENV === 'production';
-const ASSET_URL = isProd ? '//website-1254431057.cos.ap-guangzhou.myqcloud.com/portal' : ''
+const ASSET_URL = isProd ? '//website-1254431057.cos.ap-guangzhou.myqcloud.com/portal/dist/' : '/'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: `${ASSET_URL}/dist/`,
+  base: `${ASSET_URL}`,
   plugins: [
     vue(),
     vueJsx(),

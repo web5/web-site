@@ -7,11 +7,12 @@
       <a href="/sql"><div class="app-content-item-nav_content">SQL美化</div></a>
     </div>
     <div class="app-content-item-nav">
-      <div class="app-content-item-nav_content">代码对比</div>
+      <a href="/json"><div class="app-content-item-nav_content">JSON格式化</div></a>
     </div>
     <div class="app-content-item-nav">
-      <div class="app-content-item-nav_content">JSON格式化</div>
+      <div class="app-content-item-nav_content">代码对比</div>
     </div>
+
     <div class="app-content-item-nav">
       <div class="app-content-item-nav_content">
         数据表格(建设中)

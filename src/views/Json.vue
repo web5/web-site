@@ -1,47 +1,53 @@
 <template>
-  <div class="app-js-uglify">
+  <div class="app-json-prettier">
     <div class="app-toolbar">
       <a-space wrap>
-        <a-button type="primary" @click="gulifyHandle">压缩</a-button>
-        <a-button type="primary" @click="copyHandle">复制压缩后代码</a-button>
+        <a-button type="primary" @click="jsonHandle">格式化</a-button>
+        <a-button type="primary" @click="powerJsonHandle">去Key双引号格式化</a-button>
+        <a-button type="primary" @click="copyHandle">复制</a-button>
       </a-space>
     </div>
     <div class="app-edit-panel">
       <div class="app-edit-panel_origin">
-        <CodeMirror :value="jsOriginValue" :lang="lang" @change="mirrorChangeHandle"></CodeMirror>
+        <ATextarea :rows="30" v-model:value="jsOriginValue"/>
       </div>
       <div class="app-edit-panel_result">
-        <ATextarea :rows="30" readonly v-model:value="jsResultValue" />
+        <CodeMirror :value="jsResultValue" :lang="lang" readonly></CodeMirror>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { minify } from "terser";
-import { javascript } from '@codemirror/lang-javascript';
 // https://terser.org/
 import useClipboard from 'vue-clipboard3'
 // https://github.com/JamieCurnow/vue-clipboard3
 import { message } from 'ant-design-vue';
+import { json } from '@codemirror/lang-json';
 import CodeMirror from '@/components/codemirror/index.vue'
 
 const jsOriginValue = ref<string>('');
 const jsResultValue = ref<string>('');
 const { toClipboard } = useClipboard();
-
-const lang = javascript();
+const lang = json();
 
 onMounted(() => {
   // TODO
 })
 
-async function gulifyHandle() {
-  const originValue = await minify(jsOriginValue.value, {
+async function jsonHandle() {
+  const reg = /(\r\n|\n|\r)/gm;
+  let result = jsOriginValue.value.replace(reg, '');
+  result = JSON.stringify(JSON.parse(result), null, '\t');
+  console.log("🚀 ~ file: Json.vue:38 ~ jsonHandle ~ result:", result)
+  jsResultValue.value = result;
+}
 
-  });
-  console.log("🚀 ~ file: UglifyJS.vue:35 ~ gulifyHandle ~ originValue:", originValue.code);
-  jsResultValue.value = originValue.code || ''
+const powerJsonHandle = async () => {
+  const reg = /("(\\[^]|[^\\"])*"(?!\s*:))|"((\\[^]|[^\\"])*)"(?=\s*:)/g;
+  let result = JSON.stringify(JSON.parse(jsOriginValue.value), null, '\t');
+  result =  result.replace(reg, '$1$3');
+  jsResultValue.value = result;
 }
 
 const copyHandle = async () => {
@@ -54,8 +60,9 @@ const copyHandle = async () => {
   }
 }
 
+
 const mirrorChangeHandle = (value: string) => {
-  jsOriginValue.value = value;
+  // jsResultValue.value = value;
 
 }
 

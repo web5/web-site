@@ -1,21 +1,36 @@
 <template>
-  <div id="codemirror_container"></div>
+  <div id="codemirror_container" class="codemirror_container"></div>
 </template>
 <script setup lang="ts">
 import { ref, defineEmits, defineProps, watch, onMounted } from 'vue'
+import { type PropType } from 'vue-demi';
 import { basicSetup } from 'codemirror';
 import { indentWithTab, defaultKeymap } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
-import { MySQL, sql } from '@codemirror/lang-sql';
-import { EditorState } from '@codemirror/state';
-import { EditorView, lineNumbers, ViewUpdate, keymap } from '@codemirror/view';
-import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import { search } from '@codemirror/search';
+import { EditorState, Compartment } from '@codemirror/state';
+import { EditorView, lineNumbers, ViewUpdate, keymap, gutters, gutter } from '@codemirror/view';
+import { syntaxHighlighting, defaultHighlightStyle, foldGutter, LanguageSupport } from '@codemirror/language';
+import {
+  forceLinting,
+  linter,
+  lintGutter,
+  type LintSource,
+} from '@codemirror/lint';
 
 const props = defineProps({
   value: {
     type: String,
     default: '',
-  }
+  },
+  lang: {
+      type: Object as PropType<LanguageSupport>,
+      default: () => undefined,
+  },
+  readonly: {
+    type: Boolean,
+    default: false,
+  },
 })
 const codemiororInstance = ref<EditorView>();
 const cursorIndex = ref<number>(0)
@@ -28,6 +43,7 @@ const setDocContent = (value: string) => {
 const initCodeMirror = (v: string) => {
   const docContent = v;
   const wrapDom = document.getElementById('codemirror_container');
+  const language = new Compartment();
   if (wrapDom) {
     if (codemiororInstance.value) {
       codemiororInstance.value.dispatch({
@@ -49,12 +65,24 @@ const initCodeMirror = (v: string) => {
             fallback: true,
           }),
           basicSetup,
-          sql({
-            dialect: MySQL,
-            upperCaseKeywords: true,
+          props.lang ? language.of(props.lang) : javascript(),
+          EditorState.readOnly.of(props.readonly),
+          lintGutter(),
+          search({
+            top: true,
+            // caseSensitive: false,
+            // literal: false,
+            // wholeWord: false,
+            // regexp: false,
           }),
-          javascript(),
-          // json(),
+          foldGutter({
+
+          }),
+          gutter({
+          }),
+          gutters({
+            fixed: true,
+          }),
           // oneDark, // 给CodeMirror添加暗黑主题
           keymap.of([indentWithTab, ...defaultKeymap]),
           EditorView.updateListener.of((view: ViewUpdate) => {
@@ -77,7 +105,7 @@ const initCodeMirror = (v: string) => {
 
       // 让编辑器内容区可以滚动
       const scrollEl = editor.scrollDOM;
-      scrollEl.style.height = '500px';
+      scrollEl.style.height = '670px';
       scrollEl.style.overflowY = 'auto';
       codemiororInstance.value = editor;
     }
@@ -101,6 +129,9 @@ onMounted(() => {
   :deep() .cm-editor {
     background: #fff;
     border: 1px solid #d1dbe5;
+  }
+  .codemirror_container {
+    margin-top: -10px;
   }
 </style>
 
